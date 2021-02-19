@@ -45,7 +45,7 @@ export default function Home() {
 
   return (
     <div className="mx-96 mt-26 w-96s h-96 mt-24">
-      <input className="border rounded mr-5 pl-2" type="text" value={inputtext} onChange={e => setinputtext(e.target.value)}/>
+      <input placeholder="Start typing..." className="border rounded mr-5 pl-2" type="text" value={inputtext} onChange={e => setinputtext(e.target.value)}/>
       <button className={`border rounded px-3 ${errorelement === "Add Choice" ? "text-black" : "text-red-600"}`} onClick={onSubmit}>{errorelement}</button>
 
       <div className="mt-4">
@@ -53,7 +53,7 @@ export default function Home() {
           <Choice key={choice} choice={choice} choices={choices} removeChoice={removeChoice} moveUp={moveUp} moveDown={moveDown}/>
         ))}
       </div>
-      <button className='border rounded px-3 mt-4' type="submit" onClick={sendData}>Create Poll</button>
+      <button className={`border rounded px-3 mt-4 ${choices.length < 2 ? 'hidden' : 'block'}`} type="submit" onClick={sendData}>Create Poll</button>
     </div>    
   )
 }
