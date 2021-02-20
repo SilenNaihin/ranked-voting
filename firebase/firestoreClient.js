@@ -1,3 +1,3 @@
 import firebase from "."
-import "firebase/auth"
+import "firebase/firestore"
 export default firebase.firestore()

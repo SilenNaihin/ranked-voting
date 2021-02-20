@@ -1,17 +1,22 @@
 import Choice from "../components/choice";
 import {useState, useEffect} from "react";
 import uuid from 'react-uuid';
+import db from '../firebase/firestoreClient';
+import firebase from "../firebase/index"
 
 const uniqueLink =  uuid()
+let url = `https://ranked-voting.vercel.app/${uniqueLink}`;
 
 export default function Home() {
   const [choices, setChoices] = useState([]);
   const [inputtext, setinputtext] = useState("");
-  const [errorelement, setErrorElement] = useState("Add Choice");
+  const [buttonElement, setButtonElement] = useState("Add Choice");
   const [createpoll, setCreatePoll] = useState(true);
   const [hidden, setHidden] = useState(false);
   const [voting, setVoting] = useState(false);
-  let url = `https://ranked-voting.vercel.app/${uniqueLink}`;
+  const [removechoice,setRemoveChoice] = useState(false);
+  const [numwinners,setNumWinners] = useState("");
+  const [iterator,setIterator] = useState(false);
 
   useEffect(()=> {
     if (url == window.location.href){
@@ -25,12 +30,12 @@ export default function Home() {
 
   function onSubmit () {
       if (choices.includes(inputtext)){
-        setErrorElement("Choice Already Exists!")
+        setButtonElement("Choice Already Exists!")
       } else if (inputtext === "") { 
-        setErrorElement("Enter Something")
+        setButtonElement("Enter Something")
       } else {
         setChoices([...choices, inputtext])
-        setErrorElement("Add Choice")
+        setButtonElement("Add Choice")
       }  
   }
 
@@ -53,18 +58,34 @@ export default function Home() {
     setChoices(newChoices)
   }
 
-  
   function sendData () {
-    setCreatePoll(false)
-    setHidden(true)
+    // change the first time they click on the button
+    if (iterator === false){
+      setButtonElement('Create Poll');
+      setIterator(true);
+      setRemoveChoice(true);
+    }
+    // only execute the second time they click the button
+    if (iterator){
+      
+      if (numwinners >= 20){
+        setButtonElement('Enter value less than 20')        
+      } else if (!!+numwinners) {
+        setCreatePoll(false)
+        setHidden(true)
+      } else {
+        setButtonElement('Enter a number')
+      };
+    };
+      
+      // numwinners is number of winners possible. needed for algorithm
     
+    
+    // return db 
+    //   .collection('')
 
-    // block the input
-    // block the ability to execute moveUp, moveDown, remove
     // set Id to uniqueLink
 
-    // pull existing values
-    // push choices #s to firebase
 
   }
 
@@ -72,16 +93,26 @@ export default function Home() {
     <>
     <div className="text-center text-5xl bold mt-24">Ranked Voting</div>
     <div className="text-center mt-26 w-96s h-96 mt-24">
-      <input className={`border rounded mr-5 pl-2 ${voting === true ? "hidden" : ""} ${hidden === true ? "hidden" : ""}`} placeholder="Start typing..." type="text" value={inputtext} onChange={e => setinputtext(e.target.value)}/>
-      <button className={`border rounded px-3 ${voting === true ? "hidden" : ""} ${hidden === true ? "hidden" : ""} ${errorelement === "Add Choice" ? "text-black" : "text-red-600"}`} onClick={onSubmit}>{errorelement}</button>
+      {iterator === false ? (
+        <input className={`border rounded mr-5 pl-2 ${voting === true ? "hidden" : ""}`} placeholder='Start typing...' type="text" value={inputtext} onChange={e => setinputtext(e.target.value)}/>
+      ) : (
+        <input className={`border rounded mr-5 pl-2 ${voting === true ? "hidden" : ""} ${hidden === true ? "hidden" : ""}`} placeholder='How many winners...' type="text" value={numwinners} onChange={e => setNumWinners(e.target.value)}/>
+      )}
+      {iterator === false ? (
+        <button className={`border rounded px-3 ${voting === true ? "hidden" : ""} ${buttonElement === "Add Choice" ? "text-black" : "text-red-600"}`} onClick={onSubmit}>{buttonElement}</button>
+      ) : (
+        <button className={`border rounded px-3 ${voting === true ? "hidden" : ""} ${buttonElement === "Create Poll" ? "text-black" : "text-red-600"} ${hidden === true ? "hidden" : ""}`} onClick={sendData}>{buttonElement}</button>
+      )}
+      
 
       <div className="mt-4">
         {choices.map(choice => (
-          <Choice key={choice} choice={choice} choices={choices} removeChoice={removeChoice} moveUp={moveUp} moveDown={moveDown} hidden={hidden} voting={voting}/>
+          <Choice key={choice} choice={choice} choices={choices} removeChoice={removeChoice} moveUp={moveUp} moveDown={moveDown} hidden={hidden} voting={voting} removechoice={removechoice}/>
         ))}
       </div>
+      
       {createpoll ? (
-        <button className={`border rounded px-3 mt-4 text-center mx-auto ${choices.length < 2 ? 'hidden' : ''}`} type="submit" onClick={sendData}>Create Poll</button>
+        <button className={`border rounded px-3 mt-4 text-center mx-auto ${iterator ? 'hidden' : ''} ${choices.length < 2 ? 'hidden' : ''}`} type="submit" onClick={sendData}>Finalize Options</button>
       ) : (
         <div className="mt-4 mx-auto">Send this link to your friends: {url}</div>
       )}
