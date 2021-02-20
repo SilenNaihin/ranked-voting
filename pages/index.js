@@ -70,6 +70,8 @@ export default function Home() {
       
       if (numwinners >= 20){
         setButtonElement('Enter value less than 20')        
+      } else if (choices.length < +numwinners){
+        setButtonElement('More winners than choices')
       } else if (!!+numwinners) {
         setCreatePoll(false)
         setHidden(true)
@@ -77,8 +79,6 @@ export default function Home() {
         setButtonElement('Enter a number')
       };
     };
-      
-      // numwinners is number of winners possible. needed for algorithm
     
     
     // return db 
