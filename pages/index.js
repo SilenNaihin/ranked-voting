@@ -22,6 +22,8 @@ export default function Home() {
 
   const [uniqueLink,setUniqueLink] = useState(uuid()); 
   const [url,setUrl] = useState(`${process.env.BASE_URL}${uniqueLink}`) 
+  const [finalURL,setFinalUrl] = useState(`Send link to participants (click to copy): ${url}`);
+  const [copied,setCopied] = useState(false)
 
   function questionSubmit () {
       if (+pollquestion === 0){
@@ -68,9 +70,13 @@ export default function Home() {
       }  
   }
 
-  function skipVoting() {
-    //re-route them to the results dashboard
-    router.push(/results/[uniqueLink]);
+  function skipToVoting(){
+    router.push(`/results/${uniqueLink}`);
+  }
+
+  function sendToClipboard(){
+    navigator.clipboard.writeText(finalURL);
+    setCopied(true)
   }
 
   function sendData () {
@@ -136,8 +142,9 @@ export default function Home() {
         <button className={`border rounded px-3 mt-4 text-center mx-auto ${donequestion === false ? 'hidden' : ''} ${iterator ? 'hidden' : ''} ${choices.length < 2 ? 'hidden' : ''}`} type="submit" onClick={sendData}>Finalize Options</button>
       ) : (
         <div>
-          <div className="mt-4 mx-auto">Send this link to your friends: {url}</div> {/* make url clickable */}
-          <button className='border rounded px-3 mt-4 text-center mx-auto' type="submit" onClick={skipVoting}>See Results</button>
+          <div className="mt-4 mx-auto" onClick={sendToClipboard}>{finalURL}</div>
+          <div className={`mx-auto text-sm ${copied ? 'text-blue-500' : 'hidden'}`}>Copied!</div>
+          <button className='border rounded px-3 mt-4 text-center mx-auto' type="submit" onClick={skipToVoting}>See Results</button>
         </div>
         
       )}
