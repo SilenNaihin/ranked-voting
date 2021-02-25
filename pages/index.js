@@ -22,7 +22,7 @@ export default function Home() {
 
   const [uniqueLink,setUniqueLink] = useState(uuid()); 
   const [url,setUrl] = useState(`${process.env.BASE_URL}${uniqueLink}`) 
-  const [finalURL,setFinalUrl] = useState(`Send link to participants (click to copy): ${url}`);
+  const [finalURL,setFinalUrl] = useState(url);
   const [copied,setCopied] = useState(false)
 
   function questionSubmit () {
@@ -113,7 +113,7 @@ export default function Home() {
 
   return (
     <>
-    <div className="text-center text-5xl bold mt-24">Ranked Voting</div>
+    <div className="text-center text-5xl bold mt-24">Simple Ranked Voting</div>
     <div className="text-center mt-26 mt-16">
       <div className={`text-center text-3xl bold mb-8 ${donequestion === false ? 'hidden' : ''}`}>Question: {pollquestion}</div>
 
@@ -142,7 +142,7 @@ export default function Home() {
         <button className={`border rounded px-3 mt-4 text-center mx-auto ${donequestion === false ? 'hidden' : ''} ${iterator ? 'hidden' : ''} ${choices.length < 2 ? 'hidden' : ''}`} type="submit" onClick={sendData}>Finalize Options</button>
       ) : (
         <div>
-          <div className="mt-4 mx-auto" onClick={sendToClipboard}>{finalURL}</div>
+          <div className="mt-4 mx-auto" onClick={sendToClipboard}>Send link to participants (click to copy): {url}</div>
           <div className={`mx-auto text-sm ${copied ? 'text-blue-500' : 'hidden'}`}>Copied!</div>
           <button className='border rounded px-3 mt-4 text-center mx-auto' type="submit" onClick={skipToVoting}>See Results</button>
         </div>
