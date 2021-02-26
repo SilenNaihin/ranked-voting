@@ -100,7 +100,7 @@ export default function Home() {
         db.collection('poll').doc(`${uniqueLink}`).set({
           question: pollquestion,
           choices: choices,
-          winners: numwinners,
+          winners: +numwinners,
           voters: 0,
         })  
       } else {

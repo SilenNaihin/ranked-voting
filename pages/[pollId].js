@@ -1,14 +1,11 @@
 import { useRouter } from "next/router";
 import {useEffect, useState} from 'react';
-import Home from './index';
 import db from '../firebase/firestoreClient';
-import firebase from '../firebase/index'
 import VotingChoice from "../components/votingChoices";
 
 
 
 export default function Poll() {
-    // voting is whether it's a voter or not
     const router = useRouter();
     const [pollquestion,setPollQuestion] = useState('');
     const [choices,setChoices] = useState([]);
@@ -24,43 +21,33 @@ export default function Poll() {
     useEffect(()=> {
         const fetchData = async () => {
             const docRef = db.collection('poll').doc(`${router.query.pollId}`);
-            console.log(docRef)
             
             const doc = await docRef.get();
-            console.log(doc)
         
             const docData = doc.data();
-            console.log(docData)
-            console.log(`${router.query.pollId}`)
 
             if (!!docData){ 
                 for(const key in docData) {
                     if (key == 'choices'){
                         setChoices(docData[key]);
-                        console.log('choices: ' + choices)
                     } else if (key == 'winners'){
                         setNumWinners(docData[key]);
-                        console.log('numwinners: ' + numwinners)
                     } else if (key == 'question'){
                         setPollQuestion(docData[key]);
-                        console.log('pollquestion: ' + pollquestion)
                     } else if (key == 'voters'){
                         setVoters(docData[key]);
-                        console.log('voters: ' + voters)
                     } else {
-                        console.log('error')
                     }
                  }       
                 
                 
             } else {
                 router.push('/')
-                console.log('other')
           }
         }
 
         if (router.query.pollId) fetchData();
-    }, [router.query]); // ,[] causes window to be undefined?? console output?
+    }, [router.query]);
 
     function moveUp (choice) {
         let addIn = choices.indexOf(choice);
